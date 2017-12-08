@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"net/url"
 	"reflect"
@@ -137,10 +138,18 @@ func (c *Client) Do(req *http.Request, v interface{}) (*http.Response, error) {
 	}
 	defer resp.Body.Close()
 
+	buf, _ := ioutil.ReadAll(req.Body)
+	req.Body = ioutil.NopCloser(bytes.NewReader(buf))
+	log.Printf("[INFO] =====> REQUEST\n\n\t%q", buf)
+
 	err = CheckResponse(resp)
 	if err != nil {
 		return resp, err
 	}
+
+	buf, _ = ioutil.ReadAll(resp.Body)
+	resp.Body = ioutil.NopCloser(bytes.NewReader(buf))
+	log.Printf("[INFO] =====> RESPONSE\n\n\t%q", buf)
 
 	if v != nil && resp.ContentLength != 0 {
 		if w, ok := v.(io.Writer); ok {

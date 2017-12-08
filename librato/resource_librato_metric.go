@@ -182,6 +182,8 @@ func resourceLibratoMetricRead(d *schema.ResourceData, meta interface{}) error {
 
 	log.Printf("[INFO] Reading Librato Metric: %s", id)
 	metric, _, err := client.Metrics.Get(id)
+	log.Println("[INFO] METRIC =====> IS NIL")
+
 	if err != nil {
 		if errResp, ok := err.(*librato.ErrorResponse); ok && errResp.Response.StatusCode == 404 {
 			d.SetId("")
@@ -192,6 +194,8 @@ func resourceLibratoMetricRead(d *schema.ResourceData, meta interface{}) error {
 
 	d.Set("name", metric.Name)
 	d.Set("type", metric.Type)
+
+	log.Printf("[INFO] METRIC =====> %q %q %q %+v", *metric.Name, *metric.Description, *metric.Composite, *metric.Attributes)
 
 	if metric.Description != nil {
 		d.Set("description", metric.Description)
