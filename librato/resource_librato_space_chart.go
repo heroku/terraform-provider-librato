@@ -141,6 +141,9 @@ func resourceLibratoSpaceChartHash(v interface{}) int {
 	buf.WriteString(fmt.Sprintf("%s-", m["composite"].(string)))
 	buf.WriteString(fmt.Sprintf("NAME%s-", m["name"].(string)))
 	buf.WriteString(fmt.Sprintf("PERIOD%d-", m["period"].(int)))
+	buf.WriteString(fmt.Sprintf("TFUNC%d-", m["transform_function"].(string)))
+	buf.WriteString(fmt.Sprintf("UNITSL%d-", m["units_long"].(string)))
+	buf.WriteString(fmt.Sprintf("UNITSSH%d-", m["units_short"].(string)))
 
 	return hashcode.String(buf.String())
 }
