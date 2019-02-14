@@ -33,7 +33,7 @@ $ make build
 Using the provider
 ----------------------
 for local use:
-- configure provider
+- configure provider in `main.tf`
 ```
 provider "librato" {
   version = "0.1.1"
@@ -41,7 +41,7 @@ provider "librato" {
   token = "${var.token}"
 }
 ```
-
+- build provider binary and update plugin
 ```
 mkdir -p ~/.terraform.d/plugins
 cd ~/go/src/github.com/notmaxx/terraform-provider-librato
