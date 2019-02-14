@@ -15,6 +15,12 @@ import (
 	"github.com/heroku/go-librato/librato"
 )
 
+func Int64(v int) *int64 {
+	p := new(int64)
+	*p = int64(v)
+	return p
+}
+
 func resourceLibratoSpaceChart() *schema.Resource {
 	return &schema.Resource{
 		Create: resourceLibratoSpaceChartCreate,
@@ -133,6 +139,8 @@ func resourceLibratoSpaceChartHash(v interface{}) int {
 	buf.WriteString(fmt.Sprintf("%s-", m["metric"].(string)))
 	buf.WriteString(fmt.Sprintf("%s-", m["source"].(string)))
 	buf.WriteString(fmt.Sprintf("%s-", m["composite"].(string)))
+	buf.WriteString(fmt.Sprintf("NAME%s-", m["name"].(string)))
+	buf.WriteString(fmt.Sprintf("PERIOD%d-", m["period"].(int)))
 
 	return hashcode.String(buf.String())
 }
@@ -201,6 +209,12 @@ func resourceLibratoSpaceChartCreate(d *schema.ResourceData, meta interface{}) e
 			}
 			if v, ok := streamData["units_longs"].(string); ok && v != "" {
 				stream.UnitsLong = librato.String(v)
+			}
+			if v, ok := streamData["name"].(string); ok && v != "" {
+				stream.Name = librato.String(v)
+			}
+			if v, ok := streamData["period"].(int); ok && v != 0 {
+				stream.Period = Int64(v)
 			}
 			if v, ok := streamData["min"].(float64); ok && !math.IsNaN(v) {
 				stream.Min = librato.Float(v)
@@ -326,6 +340,12 @@ func resourceLibratoSpaceChartStreamsGather(d *schema.ResourceData, streams []li
 		if s.UnitsLong != nil {
 			stream["units_long"] = *s.UnitsLong
 		}
+		if s.Name != nil {
+			stream["name"] = *s.Name
+		}
+		if s.Period != nil {
+			stream["period"] = int(*s.Period)
+		}
 		retStreams = append(retStreams, stream)
 	}
 
@@ -408,6 +428,12 @@ func resourceLibratoSpaceChartUpdate(d *schema.ResourceData, meta interface{}) e
 			}
 			if v, ok := streamData["units_longs"].(string); ok && v != "" {
 				stream.UnitsLong = librato.String(v)
+			}
+			if v, ok := streamData["name"].(string); ok && v != "" {
+				stream.Name = librato.String(v)
+			}
+			if v, ok := streamData["period"].(int); ok && v != 0 {
+				stream.Period = Int64(v)
 			}
 			if v, ok := streamData["min"].(float64); ok && !math.IsNaN(v) {
 				stream.Min = librato.Float(v)
