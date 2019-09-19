@@ -21,10 +21,6 @@ func resourceLibratoService() *schema.Resource {
 		Delete: resourceLibratoServiceDelete,
 
 		Schema: map[string]*schema.Schema{
-			"id": {
-				Type:     schema.TypeInt,
-				Computed: true,
-			},
 			"type": {
 				Type:     schema.TypeString,
 				Required: true,
@@ -141,7 +137,6 @@ func resourceLibratoServiceRead(d *schema.ResourceData, meta interface{}) error 
 
 func resourceLibratoServiceReadResult(d *schema.ResourceData, service *librato.Service) error {
 	d.SetId(strconv.FormatUint(uint64(*service.ID), 10))
-	d.Set("id", *service.ID)
 	d.Set("type", *service.Type)
 	d.Set("title", *service.Title)
 	settings, _ := resourceLibratoServicesFlatten(service.Settings)

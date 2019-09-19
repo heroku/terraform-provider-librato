@@ -10,26 +10,28 @@ Terraform Provider
 Requirements
 ------------
 
--	[Terraform](https://www.terraform.io/downloads.html) 0.10.x
--	[Go](https://golang.org/doc/install) 1.8 (to build the provider plugin)
+-	[Terraform](https://www.terraform.io/downloads.html) 0.12.x
+-	[Go](https://golang.org/doc/install) 1.12 (to build the provider plugin)
 
 Building The Provider
 ---------------------
 
-Clone repository to: `$GOPATH/src/github.com/terraform-providers/terraform-provider-librato`
-
 ```sh
-$ mkdir -p $GOPATH/src/github.com/terraform-providers; cd $GOPATH/src/github.com/terraform-providers
-$ git clone git@github.com:terraform-providers/terraform-provider-librato
+git clone git@github.com:heroku/terraform-provider-librato
+cd terraform-provider-librato
+make build
 ```
 
-Enter the provider directory and build the provider
+Using the provider
+----------------------
 
 ```sh
-$ cd $GOPATH/src/github.com/terraform-providers/terraform-provider-librato
-$ make build
+export $GOPATH=%{GOPATH:-$HOME/go/bin}
+make build
+cp $GOPATH/bin/terraform-provider-librato ~/.terraform.d/plugins
 ```
 
+<<<<<<< HEAD
 Using the provider
 ----------------------
 for local use:
@@ -52,16 +54,17 @@ cd TERRAFORM_PROJECT_DIR
 terraform init    # make sure new provider is initialized
 terraform apply
 ```
+After recompiling the provider, you will need to re-run `terraform init` init any projects that use it.
 
 Developing the Provider
 ---------------------------
 
-If you wish to work on the provider, you'll first need [Go](http://www.golang.org) installed on your machine (version 1.8+ is *required*). You'll also need to correctly setup a [GOPATH](http://golang.org/doc/code.html#GOPATH), as well as adding `$GOPATH/bin` to your `$PATH`.
+If you wish to work on the provider, you'll first need [Go](http://www.golang.org) installed on your machine (version 1.12+ is required).
 
 To compile the provider, run `make build`. This will build the provider and put the provider binary in the `$GOPATH/bin` directory.
 
 ```sh
-$ make bin
+$ make build
 ...
 $ $GOPATH/bin/terraform-provider-librato
 ...
@@ -71,12 +74,4 @@ In order to test the provider, you can simply run `make test`.
 
 ```sh
 $ make test
-```
-
-In order to run the full suite of Acceptance tests, run `make testacc`.
-
-*Note:* Acceptance tests create real resources, and often cost money to run.
-
-```sh
-$ make testacc
 ```
