@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"fmt"
 	"log"
-	"math"
 	"reflect"
 	"strconv"
 	"time"
@@ -44,13 +43,13 @@ func resourceLibratoSpaceChart() *schema.Resource {
 				ForceNew: true,
 			},
 			"min": {
-				Type:     schema.TypeFloat,
-				Default:  math.NaN(),
+				Type:     schema.TypeString,
+				Default:  "NaN",
 				Optional: true,
 			},
 			"max": {
-				Type:     schema.TypeFloat,
-				Default:  math.NaN(),
+				Type:     schema.TypeString,
+				Default:  "NaN",
 				Optional: true,
 			},
 			"label": {
@@ -108,13 +107,11 @@ func resourceLibratoSpaceChart() *schema.Resource {
 							Optional: true,
 						},
 						"min": {
-							Type:     schema.TypeFloat,
-							Default:  math.NaN(),
+							Type:     schema.TypeString,
 							Optional: true,
 						},
 						"max": {
-							Type:     schema.TypeFloat,
-							Default:  math.NaN(),
+							Type:     schema.TypeString,
 							Optional: true,
 						},
 						"transform_function": {
@@ -161,17 +158,23 @@ func resourceLibratoSpaceChartCreate(d *schema.ResourceData, meta interface{}) e
 		spaceChart.Type = librato.String(v.(string))
 	}
 	if v, ok := d.GetOk("min"); ok {
-		if math.IsNaN(v.(float64)) {
+		if v == "" || v == "NaN" {
 			spaceChart.Min = nil
 		} else {
-			spaceChart.Min = librato.Float(v.(float64))
+			f, err := strconv.ParseFloat(v.(string), 64)
+			if err == nil {
+				spaceChart.Min = librato.Float(f)
+			}
 		}
 	}
 	if v, ok := d.GetOk("max"); ok {
-		if math.IsNaN(v.(float64)) {
+		if v == "" || v == "NaN" {
 			spaceChart.Max = nil
 		} else {
-			spaceChart.Max = librato.Float(v.(float64))
+			f, err := strconv.ParseFloat(v.(string), 64)
+			if err == nil {
+				spaceChart.Max = librato.Float(f)
+			}
 		}
 	}
 	if v, ok := d.GetOk("label"); ok {
@@ -219,11 +222,17 @@ func resourceLibratoSpaceChartCreate(d *schema.ResourceData, meta interface{}) e
 			if v, ok := streamData["period"].(int); ok && v != 0 {
 				stream.Period = Int64(v)
 			}
-			if v, ok := streamData["min"].(float64); ok && !math.IsNaN(v) {
-				stream.Min = librato.Float(v)
+			if v, ok := streamData["min"].(string); ok && v != "" && v != "NaN" {
+				f, err := strconv.ParseFloat(v, 64)
+				if err == nil {
+					stream.Min = librato.Float(f)
+				}
 			}
-			if v, ok := streamData["max"].(float64); ok && !math.IsNaN(v) {
-				stream.Max = librato.Float(v)
+			if v, ok := streamData["max"].(string); ok && v != "" && v != "NaN" {
+				f, err := strconv.ParseFloat(v, 64)
+				if err == nil {
+					stream.Max = librato.Float(f)
+				}
 			}
 			streams[i] = stream
 		}
@@ -284,12 +293,14 @@ func resourceLibratoSpaceChartReadResult(d *schema.ResourceData, chart *librato.
 		}
 	}
 	if chart.Min != nil {
-		if err := d.Set("min", *chart.Min); err != nil {
+		s := fmt.Sprintf("%f", chart.Min)
+		if err := d.Set("min", s); err != nil {
 			return err
 		}
 	}
 	if chart.Max != nil {
-		if err := d.Set("max", *chart.Max); err != nil {
+		s := fmt.Sprintf("%f", chart.Max)
+		if err := d.Set("max", s); err != nil {
 			return err
 		}
 	}
@@ -376,18 +387,24 @@ func resourceLibratoSpaceChartUpdate(d *schema.ResourceData, meta interface{}) e
 		fullChart.Name = spaceChart.Name
 	}
 	if d.HasChange("min") {
-		if math.IsNaN(d.Get("min").(float64)) {
-			spaceChart.Min = nil
+		if v, ok := d.Get("min").(string); ok && v != "" && v != "NaN" {
+			f, err := strconv.ParseFloat(d.Get("min").(string), 64)
+			if err == nil {
+				spaceChart.Min = librato.Float(f)
+			}
 		} else {
-			spaceChart.Min = librato.Float(d.Get("min").(float64))
+			spaceChart.Min = nil
 		}
 		fullChart.Min = spaceChart.Min
 	}
 	if d.HasChange("max") {
-		if math.IsNaN(d.Get("max").(float64)) {
-			spaceChart.Max = nil
+		if v, ok := d.Get("max").(string); ok && v != "" && v != "NaN" {
+			f, err := strconv.ParseFloat(d.Get("max").(string), 64)
+			if err == nil {
+				spaceChart.Max = librato.Float(f)
+			}
 		} else {
-			spaceChart.Max = librato.Float(d.Get("max").(float64))
+			spaceChart.Max = nil
 		}
 		fullChart.Max = spaceChart.Max
 	}
@@ -438,11 +455,17 @@ func resourceLibratoSpaceChartUpdate(d *schema.ResourceData, meta interface{}) e
 			if v, ok := streamData["period"].(int); ok && v != 0 {
 				stream.Period = Int64(v)
 			}
-			if v, ok := streamData["min"].(float64); ok && !math.IsNaN(v) {
-				stream.Min = librato.Float(v)
+			if v, ok := streamData["min"].(string); ok && v != "" && v != "NaN" {
+				f, err := strconv.ParseFloat(v, 64)
+				if err == nil {
+					stream.Min = librato.Float(f)
+				}
 			}
-			if v, ok := streamData["max"].(float64); ok && !math.IsNaN(v) {
-				stream.Max = librato.Float(v)
+			if v, ok := streamData["max"].(string); ok && v != "" && v != "NaN" {
+				f, err := strconv.ParseFloat(v, 64)
+				if err == nil {
+					stream.Max = librato.Float(f)
+				}
 			}
 			streams[i] = stream
 		}
