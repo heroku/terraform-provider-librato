@@ -16,6 +16,9 @@ test: fmtcheck
 testacc: fmtcheck
 	TF_ACC=1 go test $(TEST) -v $(TESTARGS) -timeout 120m
 
+testaccone: fmtcheck
+	TF_ACC=1 go test $(TEST) -run=$(RUN) -v $(TESTARGS) -timeout 120m
+
 vet:
 	@echo "go vet ."
 	@go vet $$(go list ./... | grep -v vendor/) ; if [ $$? -eq 1 ]; then \
