@@ -1,0 +1,57 @@
+package librato
+
+import (
+	"fmt"
+	"log"
+	"net/url"
+	"os"
+
+	"github.com/heroku/go-librato/librato"
+)
+
+// Config defines the required config to use the provider
+type Config struct {
+	Email string `mapstructure:"email"`
+	Token string `mapstructure:"token"`
+	URL   string `mapstructure:"url"`
+}
+
+// Client returns a new Librato client
+func (c *Config) Client() (*librato.Client, error) {
+	log.Println("[INFO] Initializing Librato client")
+
+	if v := os.Getenv("LIBRATO_EMAIL"); v != "" {
+		c.Email = v
+	}
+	if c.Email == "" {
+		return nil, fmt.Errorf("Email is required")
+	}
+
+	if v := os.Getenv("LIBRATO_TOKEN"); v != "" {
+		c.Token = v
+	}
+	if c.Token == "" {
+		return nil, fmt.Errorf("Token is required")
+	}
+
+	if v := os.Getenv("LIBRATO_URL"); v != "" {
+		c.URL = v
+	}
+
+	if c.URL != "" {
+		customURL, err := url.Parse(c.URL)
+		if err != nil {
+			return nil, fmt.Errorf("Unable to parse librato URL: %s", err)
+		}
+
+		client := librato.NewClientWithBaseURL(customURL, c.Email, c.Token)
+		log.Printf("[INFO] Librato Client configured with URL")
+
+		return client, nil
+	}
+
+	client := librato.NewClient(c.Email, c.Token)
+	log.Printf("[INFO] Librato Client configured")
+
+	return client, nil
+}
