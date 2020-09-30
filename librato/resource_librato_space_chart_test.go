@@ -170,6 +170,8 @@ resource "librato_space_chart" "foobar" {
     space_id = "${librato_space.foobar.id}"
     name = "Foo Bar"
     type = "line"
+    min = 0
+    max = 100
 }`
 
 const testAccCheckLibratoSpaceChartConfig_new_value = `
@@ -181,6 +183,8 @@ resource "librato_space_chart" "foobar" {
     space_id = "${librato_space.foobar.id}"
     name = "Bar Baz"
     type = "line"
+    min = 0
+    max = 100
 }`
 
 const testAccCheckLibratoSpaceChartConfig_full = `
@@ -205,11 +209,15 @@ resource "librato_space_chart" "foobar" {
     stream {
         metric = "librato.cpu.percent.idle"
         source = "*"
+        min = 0
+        max = 100
     }
 
     # Minimal composite stream
     stream {
         composite = "s(\"cpu\", \"*\")"
+        min = 0
+        max = 100
     }
 
     # Full metric stream

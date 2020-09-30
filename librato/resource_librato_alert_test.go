@@ -265,6 +265,12 @@ func testAccCheckLibratoAlertConfig_minimal(name string) string {
 	return fmt.Sprintf(`
 resource "librato_alert" "foobar" {
     name = "%s"
+    condition {
+      type = "above"
+      threshold = 10
+      duration = 600
+      metric_name = "librato.cpu.percent.idle"
+    }
 }`, name)
 }
 
@@ -273,6 +279,12 @@ func testAccCheckLibratoAlertConfig_basic(name string) string {
 resource "librato_alert" "foobar" {
     name = "%s"
     description = "A Test Alert"
+    condition {
+      type = "above"
+      threshold = 10
+      duration = 600
+      metric_name = "librato.cpu.percent.idle"
+    }
 }`, name)
 }
 
@@ -281,6 +293,12 @@ func testAccCheckLibratoAlertConfig_new_value(name string) string {
 resource "librato_alert" "foobar" {
     name = "%s"
     description = "A modified Test Alert"
+    condition {
+      type = "above"
+      threshold = 10
+      duration = 600
+      metric_name = "librato.cpu.percent.idle"
+    }
 }`, name)
 }
 
