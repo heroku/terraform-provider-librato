@@ -27,6 +27,29 @@ make build
 cp $GOPATH/bin/terraform-provider-librato ~/.terraform.d/plugins
 ```
 
+<<<<<<< HEAD
+Using the provider
+----------------------
+for local use:
+- configure provider in `main.tf`
+```
+provider "librato" {
+  version = "0.1.1"
+  email = "${var.username}"
+  token = "${var.token}"
+}
+```
+- build provider binary and update plugin
+```
+mkdir -p ~/.terraform.d/plugins
+cd ~/go/src/github.com/notmaxx/terraform-provider-librato
+make
+mv $GOPATH/bin/terraform-provider-librato ~/.terraform.d/plugins/terraform-provider-librato_v0.1.1
+...
+cd TERRAFORM_PROJECT_DIR
+terraform init    # make sure new provider is initialized
+terraform apply
+```
 After recompiling the provider, you will need to re-run `terraform init` init any projects that use it.
 
 ## Developing the Provider
